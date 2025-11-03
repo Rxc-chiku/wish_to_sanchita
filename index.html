@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sweet Morning Surprise</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --rose-1: #fff6f9;
+            --rose-2: #fff0f4;
+            --accent: #d23f69;
+            --accent-2: #ff7aa3;
+            --muted: #5b5b5b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            font-family: 'Cormorant Garamond', serif;
+            background:
+                radial-gradient(1200px 600px at 8% 12%, rgba(210, 63, 105, 0.06), transparent 10%),
+                radial-gradient(900px 500px at 92% 88%, rgba(255, 183, 197, 0.05), transparent 12%),
+                linear-gradient(140deg, var(--rose-1), var(--rose-2) 60%, #fffaf0 100%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* canvas for gentle particles */
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .message-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 820px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88));
+            border-radius: 22px;
+            padding: 28px;
+            display: flex;
+            gap: 22px;
+            align-items: center;
+            box-shadow: 0 18px 50px rgba(196, 80, 125, 0.08);
+            border: 1px solid rgba(210, 63, 105, 0.06);
+            backdrop-filter: blur(6px) saturate(120%);
+            transform-origin: center;
+            animation: appear .9s cubic-bezier(.16, .8, .24, 1) both;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(.995)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .left {
+            flex: 0 0 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .photo-frame {
+            border-radius: 14px;
+            padding: 8px;
+            background: linear-gradient(135deg, rgba(210, 63, 105, 0.12), rgba(255, 183, 197, 0.08));
+            box-shadow: 0 10px 30px rgba(210, 63, 105, 0.06)
+        }
+
+        .photo {
+            display: block;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 12px;
+            object-fit: cover;
+            transition: transform .5s ease
+        }
+
+        .photo:hover {
+            transform: translateY(-8px) scale(1.03)
+        }
+
+        .right {
+            flex: 1;
+            text-align: left
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.2rem;
+            color: var(--accent);
+            margin-bottom: 4px;
+            letter-spacing: .6px;
+            text-shadow: 0 6px 20px rgba(210, 63, 105, 0.06)
+        }
+
+        .sub {
+            color: var(--accent-2);
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: inline-block
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 12px
+        }
+
+        .highlight {
+            font-family: 'Dancing Script', cursive;
+            color: #c93b61;
+            font-size: 1.15rem;
+            display: block;
+            margin-top: 10px
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 10px
+        }
+
+        .btn {
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            box-shadow: 0 10px 28px rgba(210, 63, 105, 0.14);
+            transition: transform .15s ease
+        }
+
+        .btn.secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(210, 63, 105, 0.12);
+            box-shadow: none
+        }
+
+        .btn:active {
+            transform: translateY(2px) scale(.995)
+        }
+
+        .floating-heart {
+            display: inline-grid;
+            align-items: center;
+            justify-items: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(210, 63, 105, 0.06), rgba(255, 183, 197, 0.03));
+            box-shadow: 0 12px 30px rgba(210, 63, 105, 0.06);
+            font-size: 22px
+        }
+
+        /* typewriter styling */
+        .typing {
+            display: inline-block;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            color: var(--muted)
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 22px;
+            background: var(--accent);
+            margin-left: 8px;
+            vertical-align: middle;
+            animation: blink 900ms steps(1) infinite
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* small note */
+        .meta {
+            font-size: .86rem;
+            color: #7a7480;
+            margin-top: 12px
+        }
+
+        /* mobile */
+        @media (max-width:880px) {
+            .message-container {
+                flex-direction: column;
+                padding: 20px;
+                text-align: center
+            }
+
+            .left {
+                order: 0
+            }
+
+            .right {
+                order: 1
+            }
+
+            h1 {
+                font-size: 2.6rem
+            }
+        }
+
+        /* reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            #particle-canvas,
+            .photo,
+            .btn,
+            .message-container {
+                animation: none !important;
+                transition: none !important
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+    <div class="message-container" role="main" aria-labelledby="greeting">
+        <div class="left" aria-hidden="true">
+            <figure class="photo-frame">
+                <img src="mpc--G1.jpg" alt="Sweet Surprise" class="photo" id="mainPhoto">
+            </figure>
+        </div>
+
+        <div class="right">
+            <h1 id="greeting"><span id="greetText">Good Morning, Sanchita</span></h1>
+            <div class="sub"><span id="typedLine" class="typing"></span><span class="cursor" aria-hidden="true"></span>
+            </div>
+
+            <p id="message">
+                Just wanted to start your day with a reminder of how special you are. Every morning I wake up grateful
+                for having you in my life.
+                Your smile brightens my day more than the morning sun.
+                <span class="highlight">May your day be as lovely as your heart.</span>
+            </p>
+
+            <div class="controls" role="group" aria-label="Actions">
+                <button class="btn" id="kissBtn" title="Send a kiss">Send a kiss ❤️</button>
+                <button class="btn secondary" id="toggleBtn" title="Toggle photo">Toggle photo</button>
+                <div class="floating-heart" id="pulse" aria-hidden="true">🌸</div>
+            </div>
+
+            <div class="meta" id="timeNote" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <script>
+        // Respect reduced motion
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Particle canvas (gentle rising petals/hearts)
+        (function () {
+            if (reduced) return;
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = innerWidth;
+            let h = canvas.height = innerHeight;
+            const sprites = ['❀', '❤️', '✦', '🌸'];
+            const particles = [];
+            function rand(min, max) { return Math.random() * (max - min) + min }
+            function make() {
+                particles.push({
+                    x: rand(0, w), y: h + rand(20, 200), size: rand(18, 36),
+                    vx: rand(-0.3, 0.7), vy: rand(-0.6, -1.6), life: rand(8, 20),
+                    glyph: sprites[Math.floor(Math.random() * sprites.length)], alpha: rand(0.06, 0.18)
+                })
+            }
+            for (let i = 0; i < 28; i++) make();
+            let last = 0;
+            function frame(t) {
+                const dt = (t - last) / 1000; last = t;
+                ctx.clearRect(0, 0, w, h);
+                if (Math.random() < 0.12) make();
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx * 60 * dt;
+                    p.y += p.vy * 60 * dt;
+                    p.life -= dt;
+                    ctx.globalAlpha = p.alpha * Math.max(0, p.life / 8);
+                    ctx.font = `${p.size}px serif`;
+                    ctx.fillText(p.glyph, p.x, p.y);
+                    if (p.life <= 0 || p.y < -60 || p.x < -60 || p.x > w + 60) particles.splice(i, 1);
+                }
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+            addEventListener('resize', () => { w = canvas.width = innerWidth; h = canvas.height = innerHeight });
+        })();
+
+        // Typewriter for small subtitle
+        (function () {
+            const lines = [
+                "A little surprise to start your day ✨",
+                "You are loved, you are enough.",
+                "Smile — today holds small wonders."
+            ];
+            const el = document.getElementById('typedLine');
+            let li = 0, pos = 0;
+            function type() {
+                const text = lines[li];
+                el.textContent = text.slice(0, pos++);
+                if (pos <= text.length) setTimeout(type, 36 + Math.random() * 40);
+                else setTimeout(() => { pos = 0; li = (li + 1) % lines.length; setTimeout(type, 900) }, 2000);
+            }
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) type();
+            else el.textContent = lines[0];
+        })();
+
+        // Time note
+        (function () {
+            const now = new Date(); const h = now.getHours();
+            const noteEl = document.getElementById('timeNote');
+            let note = 'Wishing you a bright day.';
+            if (h < 6) note = 'Sweet early morning — enjoy the calm.';
+            else if (h < 12) note = 'Hope your morning is off to a lovely start.';
+            else if (h < 18) note = 'Have a peaceful afternoon.';
+            else note = 'Good evening — rest and smile.';
+            noteEl.textContent = note;
+        })();
+
+        // "Send a kiss" heart burst
+        (function () {
+            const btn = document.getElementById('kissBtn');
+            const container = document.body;
+            function burst(x, y) {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                const frag = document.createDocumentFragment();
+                for (let i = 0; i < 14; i++) {
+                    const span = document.createElement('div');
+                    span.textContent = ['💖', '❤️', '💘', '🌸'][Math.floor(Math.random() * 4)];
+                    span.style.position = 'fixed';
+                    span.style.left = x + 'px';
+                    span.style.top = y + 'px';
+                    span.style.pointerEvents = 'none';
+                    span.style.fontSize = (10 + Math.random() * 20) + 'px';
+                    span.style.opacity = 1;
+                    span.style.transform = 'translate(-50%,-50%)';
+                    span.style.zIndex = 9999;
+                    container.appendChild(span);
+                    (function (s, idx) {
+                        const angle = (Math.PI * 2) * (idx / 14) + (Math.random() - 0.5);
+                        const dist = 40 + Math.random() * 120;
+                        const dx = Math.cos(angle) * dist;
+                        const dy = Math.sin(angle) * (dist * 0.6) - 30;
+                        s.animate([
+                            { transform: `translate(-50%,-50%) translate(0px,0px) scale(1)`, opacity: 1 },
+                            { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(${0.7 + Math.random()})`, opacity: 0 }
+                        ], { duration: 900 + Math.random() * 600, easing: 'cubic-bezier(.2,.9,.25,1)' })
+                            .onfinish = () => s.remove();
+                    })(span, i);
+                }
+            }
+
+            btn.addEventListener('click', (e) => {
+                btn.disabled = true;
+                btn.textContent = 'Sent ❤️';
+                burst(innerWidth / 2, e.clientY || innerHeight / 2);
+                setTimeout(() => { btn.disabled = false; btn.textContent = 'Take care ,buddy ❤️' }, 1700);
+            });
+
+            // also pulse the floating-heart on hover
+            const pulse = document.getElementById('pulse');
+            pulse.addEventListener('mouseenter', () => pulse.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 700, iterations: 2 }));
+            pulse.addEventListener('click', () => {
+                burst(window.innerWidth / 2, window.innerHeight / 2);
+            });
+        })();
+
+        // Toggle photo simple
+        (function () {
+            const photo = document.getElementById('mainPhoto');
+            const toggle = document.getElementById('toggleBtn');
+            toggle.addEventListener('click', () => {
+                if (!photo.dataset.swap) {
+                    photo.dataset.swap = photo.src;
+                    photo.src = photo.src; // no alternate provided; keeps same — replace filename if you add one
+                    toggle.textContent = 'Show original';
+                } else {
+                    photo.src = photo.dataset.swap;
+                    delete photo.dataset.swap;
+                    toggle.textContent = 'Toggle photo';
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>
